@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["jest", "node"],
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": ["src", "jest.config.js"],
+  "exclude": ["node_modules"]
+}
