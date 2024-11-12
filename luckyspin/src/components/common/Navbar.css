@@ -1,0 +1,103 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 0 20px;
+  background-color: #333;
+  color: #fff;
+  height: auto;
+  gap: 30px;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.logo {
+  margin-right: 8px;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.website-name {
+  font-size: 1.2em;
+}
+
+.balance-indicator {
+  display: flex;
+  align-items: center;
+}
+
+.coin-image {
+  width: 80px;
+  height: 80px;
+  margin-right: 8px;
+}
+
+.logo-image {
+  width: 160px;
+  height: 160px;
+  margin-right: 8px;
+}
+
+.balance-amount {
+  font-size: 35px;
+}
+.balance-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.account-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.button-profile, .button-logout, .button-sign {
+  background: #555;
+  color: #fff;
+  border: none;
+  padding: 22px 20px;
+  margin: 4px 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.button-profile:hover, .button-logout:hover, .button-signin:hover {
+  background: #777;
+}
+
+@font-face {
+  src: url("https://www.axis-praxis.org/fonts/webfonts/MetaVariableDemo-Set.woff2")
+    format("woff2");
+  font-family: "Meta";
+  font-style: normal;
+  font-weight: normal;
+}
+.slogan{
+  transition: all 0.5s;
+  -webkit-text-stroke: 4px #d6f4f4;
+  font-variation-settings: "wght" 900, "ital" 1;
+  font-size: clamp(1rem, 1vw + 1rem, 2rem);
+  text-align: center;
+  color: transparent;
+  font-family: "Meta", sans-serif;
+  text-shadow: 10px 10px 0px #07bccc,
+    15px 15px 0px #e601c0,
+    20px 20px 0px #e9019a,
+    25px 25px 0px #f40468,
+    45px 45px 10px #482896;
+  cursor: pointer;
+
+  flex: 1;
+  flex-shrink: 1; 
+}
+
+.slogan:hover {
+  font-variation-settings: "wght" 100, "ital" 0;
+  text-shadow: none;
+}

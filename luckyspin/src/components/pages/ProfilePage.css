@@ -1,0 +1,27 @@
+.history-item {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 8px 0;
+    list-style: none;
+  }
+  
+  .history-item.deposit {
+    background-color: #e0f7fa;
+    color: #00796b;
+  }
+  
+  .history-item.withdraw {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+  
+  .history-item.won {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+  
+  .history-item.lost {
+    background-color: #f3e5f5;
+    color: #6a1b9a;
+  }
+  

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: luckyspin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: luckyspin
+  template:
+    metadata:
+      labels:
+        app: luckyspin
+    spec:
+      containers:
+      - name: luckyspin-app
+        image: luckyspin-app
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: luckyspin-service
+spec:
+  type: NodePort
+  selector:
+    app: luckyspin
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 32000 

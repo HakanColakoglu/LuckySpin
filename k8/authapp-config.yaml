@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authapp
+  template:
+    metadata:
+      labels:
+        app: authapp
+    spec:
+      containers:
+      - name: authapp
+        image: auth-app
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 4000  # Application's internal port
+        env:
+          - name: AUTH_PORT
+            value: "4000"
+          - name: DB_USER
+            value: "luckyspin_data_admin"
+          - name: DB_HOST
+            value: "postgres"
+          - name: DB_NAME
+            value: "luckyspin_data"
+          - name: DB_PORT
+            value: "5432"
+          # Secure environment variables from Secret
+          - name: DB_PASS
+            value: "luckyspin_data_pwd"
+          - name: JWT_SECRET
+            value: jwt_secret
+        volumeMounts:
+          - mountPath: /app/config
+            name: config-volume
+      volumes:
+        - name: config-volume
+          emptyDir: {}
+
+---
+
+# Service with NodePort to expose the application
+apiVersion: v1
+kind: Service
+metadata:
+  name: authapp-service
+spec:
+  type: NodePort
+  selector:
+    app: authapp
+  ports:
+    - port: 4000             # Internal Cluster IP service port
+      targetPort: 4000       # Application container port

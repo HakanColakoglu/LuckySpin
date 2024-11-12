@@ -1,0 +1,112 @@
+# Persistent Volume Claim for PostgreSQL data
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+
+# ConfigMap for SQL initialization script
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-sql
+data:
+  init.sql: |
+    CREATE DATABASE luckyspin_data;
+    CREATE ROLE luckyspin_data_admin WITH LOGIN PASSWORD 'luckyspin_data_pwd';
+    GRANT ALL PRIVILEGES ON DATABASE "luckyspin_data" TO luckyspin_data_admin;
+    \connect luckyspin_data;
+    CREATE TABLE users (
+      id SERIAL PRIMARY KEY,
+      username VARCHAR(100) UNIQUE NOT NULL,
+      password VARCHAR(100) NOT NULL,
+      role VARCHAR(100) NOT NULL
+    );
+    CREATE TABLE user_balance (
+      user_id INT REFERENCES users(id) PRIMARY KEY,
+      balance INT NOT NULL CHECK (balance >= 0)
+    );
+    CREATE TABLE balance_history (
+      id SERIAL PRIMARY KEY,
+      user_id INT REFERENCES users(id),
+      date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      amount INT NOT NULL,
+      type VARCHAR(50) CHECK (type IN ('lost', 'won', 'deposit', 'withdraw'))
+    );
+    GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE users, user_balance, balance_history TO luckyspin_data_admin;
+    GRANT USAGE, SELECT ON SEQUENCE users_id_seq TO luckyspin_data_admin;
+    GRANT USAGE, SELECT ON SEQUENCE balance_history_id_seq TO luckyspin_data_admin;
+
+---
+
+# PostgreSQL Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:latest
+        ports:
+        - containerPort: 5432
+        env:
+          # Set PostgreSQL credentials as environment variables
+          - name: POSTGRES_DB
+            value: "luckyspin_data"
+          - name: POSTGRES_USER
+            value: "luckyspin_data_admin"
+          - name: POSTGRES_PASSWORD
+            value: "luckyspin_data_pwd"
+        volumeMounts:
+          # Mount the Persistent Volume for data persistence
+          - mountPath: /var/lib/postgresql/data
+            name: postgres-persistent-storage
+          # Mount the init.sql file from ConfigMap to the initialization directory
+          - mountPath: /docker-entrypoint-initdb.d/init.sql
+            subPath: init.sql
+            name: init-sql-config
+      volumes:
+        # Define the Persistent Volume Claim for data
+        - name: postgres-persistent-storage
+          emptyDir: {}
+        # Define the ConfigMap as a volume for init.sql
+        - name: init-sql-config
+          configMap:
+            name: postgres-init-sql
+
+---
+
+# PostgreSQL Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  selector:
+    app: postgres
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  type: ClusterIP
+
+# kubectl exec -it postgres-85987b986d-pnzv6 -- bash
+# psql -U luckyspin_data_admin -d luckyspin_data
+# \i /docker-entrypoint-initdb.d/init.sql

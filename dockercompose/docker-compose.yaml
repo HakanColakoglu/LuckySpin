@@ -1,0 +1,70 @@
+version: '3.8'
+services:
+  authapp:
+    image: auth-app
+    environment:
+      - AUTH_PORT=4000
+      - DB_USER=luckyspin_data_admin
+      - DB_HOST=postgres
+      - DB_NAME=luckyspin_data
+      - DB_PORT=5432
+      - DB_PASS=luckyspin_data_pwd
+      - JWT_SECRET=jwt_secret
+    ports:
+      - "4000:4000"
+    depends_on:
+      - postgres
+      - redis
+
+  gateway:
+    image: gateway-app
+    environment:
+      - AUTH_PORT=4000
+      - GATEWAY_PORT=31000
+      - AUTHENTICATOR_URL=http://authapp:4000
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DB_USER=luckyspin_data_admin
+      - DB_HOST=postgres
+      - DB_NAME=luckyspin_data
+      - DB_PORT=5432
+      - DB_PASS=luckyspin_data_pwd
+      - ALLOWED_ORIGINS=https://example.com,
+      - JWT_SECRET=jwt_secret
+    ports:
+      - "31000:31000"
+    depends_on:
+      - authapp
+      - redis
+      - postgres
+
+  luckyspin:
+    image: luckyspin-app
+    ports:
+      - "32000:80"  # Expose luckyspin on localhost:32000
+    depends_on:
+      - gateway
+
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=luckyspin_data
+      - POSTGRES_USER=luckyspin_data_admin
+      - POSTGRES_PASSWORD=luckyspin_data_pwd
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local

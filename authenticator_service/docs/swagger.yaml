@@ -1,0 +1,136 @@
+openapi: "3.0.0"
+info:
+  title: Authentication API
+  description: API for user authentication, including signup and signin with JWT-based token issuance.
+  version: "1.0.0"
+paths:
+  /signup:
+    post:
+      summary: "Sign up a new user"
+      description: "Creates a new user with a hashed password and stores user information in the database."
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+                - role
+              properties:
+                username:
+                  type: string
+                  description: "Unique username for the user."
+                password:
+                  type: string
+                  description: "Password for the user. Will be hashed before saving."
+                role:
+                  type: string
+                  description: "Role of the user (e.g., 'admin', 'user')."
+      responses:
+        "201":
+          description: "User created successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User created successfully"
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      username:
+                        type: string
+                      role:
+                        type: string
+        "400":
+          description: "Username already exists"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Username already exists"
+        "500":
+          description: "Internal server error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal Server Error"
+  /signin:
+    post:
+      summary: "Sign in an existing user"
+      description: "Authenticates user credentials and provides a JWT token if successful."
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  description: "Username of the user."
+                password:
+                  type: string
+                  description: "Password of the user."
+      responses:
+        "200":
+          description: "Sign-in successful"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Sign-in successful"
+                  token:
+                    type: string
+                    description: "JWT token for user authentication."
+        "401":
+          description: "Invalid credentials"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid credentials"
+        "500":
+          description: "Internal server error or token generation error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal Server Error"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []

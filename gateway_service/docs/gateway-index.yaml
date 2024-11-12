@@ -1,0 +1,172 @@
+openapi: "3.0.0"
+info:
+  title: Gateway Index API
+  description: "Gateway API routes for user profile management, balance management, and gameplay (coin flip)."
+  version: "1.0.0"
+paths:
+  /:
+    get:
+      summary: "Main page"
+      description: "Returns a welcome message for the main page."
+      tags:
+        - Main
+      responses:
+        "200":
+          description: "Success"
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Main Page!"
+
+  /user/profile:
+    get:
+      summary: "Get user profile"
+      description: "Fetches user profile details including balance and transaction history. Accessible only by users with the 'user' role."
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: "User profile retrieved successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                  balance:
+                    type: integer
+                    description: "Current user balance."
+                  history:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date-time
+                        amount:
+                          type: integer
+                        type:
+                          type: string
+                          example: "deposit"
+        "401":
+          description: "Unauthorized"
+        "500":
+          description: "Internal server error"
+
+  /user/credit:
+    post:
+      summary: "Update user balance"
+      description: "Allows a user to deposit or withdraw funds. Amount cannot exceed the maximum balance or result in a negative balance."
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount
+                - type
+              properties:
+                amount:
+                  type: integer
+                  description: "The amount to deposit or withdraw."
+                type:
+                  type: string
+                  enum: ["deposit", "withdraw"]
+                  description: "Transaction type (deposit or withdraw)."
+      responses:
+        "200":
+          description: "Transaction successful"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Transaction successful"
+                  balance:
+                    type: integer
+                    description: "Updated balance after transaction."
+        "400":
+          description: "Invalid type or amount"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid type or amount"
+        "500":
+          description: "Internal server error"
+
+  /play/coinflip:
+    post:
+      summary: "Play coin flip game"
+      description: "User can place a bet on a coin flip game, choosing either heads or tails. If they win, the bet amount is added to their balance; if they lose, it's deducted."
+      tags:
+        - Game
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount
+                - selection
+              properties:
+                amount:
+                  type: integer
+                  description: "The amount to bet on the coin flip."
+                selection:
+                  type: string
+                  enum: ["selectionA", "selectionB"]
+                  description: "User's choice for the coin flip result."
+      responses:
+        "200":
+          description: "Game result"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "You won!"
+                  newBalance:
+                    type: integer
+                    description: "Updated balance after game result."
+        "400":
+          description: "Insufficient balance or invalid bet amount"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Insufficient balance"
+        "500":
+          description: "Internal server error"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
