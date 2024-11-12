@@ -5,7 +5,6 @@ metadata:
   name: app-secrets
 type: Opaque
 data:
-  DB_PASS: bHVja3lzcGluX2RhdGFfcHdk
   JWT_SECRET: and0X3NlY3JldA==
 ---
 
@@ -49,9 +48,10 @@ spec:
             value: "luckyspin_data"
           - name: DB_PORT
             value: "5432"
-          # Secure environment variables from Secret
           - name: DB_PASS
             value: "luckyspin_data_pwd"
+          - name: ALLOWED_ORIGINS
+            value: "https://example.com,http://localhost:5173" #For vite app and tests, append the list
           - name: JWT_SECRET
             valueFrom:
               secretKeyRef:
