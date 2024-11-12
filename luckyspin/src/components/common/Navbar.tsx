@@ -48,7 +48,13 @@ const Navbar = ({ onLogout }: NavbarProps) => {
             >
               Profile
             </button>
-            <button className="button-logout" onClick={onLogout}>
+            <button
+              className="button-logout"
+              onClick={() => {
+                onLogout();
+                setBalance(0);
+              }}
+            >
               Logout
             </button>
           </div>

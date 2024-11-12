@@ -1,28 +1,27 @@
+const AUTH_URL = process.env.REACT_APP_AUTH_URL || "http://localhost:31000";
+
 export const signin = async (username: string, password: string) => {
   try {
-    const response = await fetch("http://localhost:31000/auth/signin", {
+    const response = await fetch(`${AUTH_URL}/auth/signin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
       credentials: "include",
     });
 
-    return response.ok ? { success: true } : { success: false };
+    return response.ok;
   } catch (error) {
     console.error("Signin error:", error);
     return { success: false };
   }
 };
 
-export const signup = async (
-  username: string,
-  password: string,
-) => {
+export const signup = async (username: string, password: string, role:string="user") => {
   try {
-    const response = await fetch("http://localhost:31000/auth/signup", {
+    const response = await fetch(`${AUTH_URL}/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, password, role }),
       credentials: "include",
     });
 
@@ -55,7 +54,7 @@ export const signup = async (
 
 export const logout = async () => {
   try {
-    await fetch("http://localhost:31000/auth/logout", {
+    await fetch(`${AUTH_URL}/auth/logout`, {
       method: "GET",
       credentials: "include",
     });
@@ -66,13 +65,10 @@ export const logout = async () => {
 
 export const validateSession = async () => {
   try {
-    const response = await fetch(
-      "http://localhost:31000/auth/validate/session",
-      {
-        method: "GET",
-        credentials: "include",
-      }
-    );
+    const response = await fetch(`${AUTH_URL}/auth/validate/session`, {
+      method: "GET",
+      credentials: "include",
+    });
     return response.ok;
   } catch (error) {
     console.error("Session validation error:", error);
@@ -85,7 +81,7 @@ export const updateBalance = async (
   type: "deposit" | "withdraw"
 ) => {
   try {
-    const response = await fetch("http://localhost:31000/user/credit", {
+    const response = await fetch(`${AUTH_URL}/user/credit`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount, type }),
@@ -100,7 +96,7 @@ export const updateBalance = async (
 
 export const getBalance = async (): Promise<number | null> => {
   try {
-    const response = await fetch("http://localhost:31000/user/profile", {
+    const response = await fetch(`${AUTH_URL}/user/profile`, {
       credentials: "include",
     });
     if (response.ok) {
@@ -116,7 +112,7 @@ export const getBalance = async (): Promise<number | null> => {
 
 export const getBalanceHistory = async () => {
   try {
-    const response = await fetch("http://localhost:31000/user/profile", {
+    const response = await fetch(`${AUTH_URL}/user/profile`, {
       credentials: "include",
     });
     return response.ok ? await response.json() : [];

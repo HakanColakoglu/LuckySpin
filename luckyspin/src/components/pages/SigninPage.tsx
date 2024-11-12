@@ -6,6 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 
 const SigninPage = () => {
   const { isSignedIn, setIsSignedIn } = useAuth();
+  const [ signinResult, setSigninResult ] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -16,6 +17,9 @@ const SigninPage = () => {
     if (success) {
       setIsSignedIn(true);
       navigate("/");
+    }else{
+      setSigninResult("Wrong username or password!")
+      navigate("/signin");
     }
   };
 
@@ -40,6 +44,7 @@ const SigninPage = () => {
         />
         <button type="submit">Sign In</button>
       </form>
+      <span>{signinResult}</span>
       <p>
         Don't have an account? <Link to="/signup">Sign up here</Link>
       </p>
