@@ -3,6 +3,8 @@ import { useBalance } from "../../context/BalanceProvider";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
+const GATEWAY_URL = process.env.REACT_APP_GATEWAY_URL || "http://localhost:31000";
+
 const GamePage = () => {
   const { balance, setBalance } = useBalance();
   const [betAmount, setBetAmount] = useState<number>(0);
@@ -12,7 +14,7 @@ const GamePage = () => {
 
   const handleBet = async (selection: "selectionA" | "selectionB") => {
     try {
-      const response = await fetch("http://localhost:31000/play/coinflip", {
+      const response = await fetch(`${GATEWAY_URL}/play/coinflip`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

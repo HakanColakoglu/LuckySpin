@@ -1,15 +1,3 @@
-# Secret for sensitive environment variables
-apiVersion: v1
-kind: Secret
-metadata:
-  name: app-secrets
-type: Opaque
-data:
-  JWT_SECRET: and0X3NlY3JldA==
-
----
-
-# Deployment for the Node.js application
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -45,10 +33,7 @@ spec:
           - name: DB_PASS
             value: "luckyspin_data_pwd"
           - name: JWT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: app-secrets
-                key: JWT_SECRET
+            value: jwt_secret
         volumeMounts:
           - mountPath: /app/config
             name: config-volume

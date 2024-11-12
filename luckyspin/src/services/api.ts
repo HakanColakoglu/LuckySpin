@@ -1,8 +1,8 @@
-const AUTH_URL = process.env.REACT_APP_AUTH_URL || "http://localhost:31000";
+const GATEWAY_URL = process.env.REACT_APP_GATEWAY_URL || "http://localhost:31000";
 
 export const signin = async (username: string, password: string) => {
   try {
-    const response = await fetch(`${AUTH_URL}/auth/signin`, {
+    const response = await fetch(`${GATEWAY_URL}/auth/signin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
@@ -18,7 +18,7 @@ export const signin = async (username: string, password: string) => {
 
 export const signup = async (username: string, password: string, role:string="user") => {
   try {
-    const response = await fetch(`${AUTH_URL}/auth/signup`, {
+    const response = await fetch(`${GATEWAY_URL}/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password, role }),
@@ -54,7 +54,7 @@ export const signup = async (username: string, password: string, role:string="us
 
 export const logout = async () => {
   try {
-    await fetch(`${AUTH_URL}/auth/logout`, {
+    await fetch(`${GATEWAY_URL}/auth/logout`, {
       method: "GET",
       credentials: "include",
     });
@@ -65,7 +65,7 @@ export const logout = async () => {
 
 export const validateSession = async () => {
   try {
-    const response = await fetch(`${AUTH_URL}/auth/validate/session`, {
+    const response = await fetch(`${GATEWAY_URL}/auth/validate/session`, {
       method: "GET",
       credentials: "include",
     });
@@ -81,7 +81,7 @@ export const updateBalance = async (
   type: "deposit" | "withdraw"
 ) => {
   try {
-    const response = await fetch(`${AUTH_URL}/user/credit`, {
+    const response = await fetch(`${GATEWAY_URL}/user/credit`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount, type }),
@@ -96,7 +96,7 @@ export const updateBalance = async (
 
 export const getBalance = async (): Promise<number | null> => {
   try {
-    const response = await fetch(`${AUTH_URL}/user/profile`, {
+    const response = await fetch(`${GATEWAY_URL}/user/profile`, {
       credentials: "include",
     });
     if (response.ok) {
@@ -112,7 +112,7 @@ export const getBalance = async (): Promise<number | null> => {
 
 export const getBalanceHistory = async () => {
   try {
-    const response = await fetch(`${AUTH_URL}/user/profile`, {
+    const response = await fetch(`${GATEWAY_URL}/user/profile`, {
       credentials: "include",
     });
     return response.ok ? await response.json() : [];
