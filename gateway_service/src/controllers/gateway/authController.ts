@@ -57,7 +57,8 @@ const signIn = async (req: Request, res: Response) => {
     });
 
     const token = response.data.token;
-    res.cookie("token", token, { httpOnly: true, secure: true });
+    // For development purposes, false allows http requests, otherwise only https requests.
+    res.cookie("token", token, { httpOnly: true, secure: false });
 
     return res.status(200).json({ message: "Sign-in successful" });
   } catch (error) {
@@ -86,7 +87,7 @@ const logout = async (req: Request, res: Response) => {
         EX: exp - Math.floor(Date.now() / 1000),
       });
 
-      res.clearCookie("token", { httpOnly: true, secure: true });
+      res.clearCookie("token", { httpOnly: true, secure: false });
       return res.status(200).json({ message: "Logged out successfully" });
     } else {
       return res.status(400).json({ message: "Invalid token" });

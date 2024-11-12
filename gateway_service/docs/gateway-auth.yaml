@@ -1,0 +1,188 @@
+openapi: "3.0.0"
+info:
+  title: Gateway API
+  description: Gateway API to interact with the Authentication service, including sign-up, sign-in, and logout endpoints.
+  version: "1.0.0"
+paths:
+  /auth/signup:
+    post:
+      summary: "Sign up a new user"
+      description: "Creates a new user by interacting with the Authentication API, with additional balance and history creation."
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+                - role
+              properties:
+                username:
+                  type: string
+                  description: "Unique username for the user."
+                password:
+                  type: string
+                  description: "Password for the user. Must meet specific validation requirements."
+                role:
+                  type: string
+                  description: "Role of the user (e.g., 'admin', 'user')."
+      responses:
+        "201":
+          description: "User created successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User created successfully"
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      username:
+                        type: string
+                      role:
+                        type: string
+        "400":
+          description: "Validation error or user already exists"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Username is required"
+                  message:
+                    type: string
+                    example: "Username already exists or validation error"
+        "500":
+          description: "Internal server error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal Server Error"
+  /auth/signin:
+    post:
+      summary: "Sign in an existing user"
+      description: "Authenticates user credentials via the Authentication API and issues a JWT token."
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  description: "Username of the user."
+                password:
+                  type: string
+                  description: "Password of the user."
+      responses:
+        "200":
+          description: "Sign-in successful"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Sign-in successful"
+        "400":
+          description: "Already signed in or validation error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Already signed in"
+        "401":
+          description: "Invalid credentials"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid credentials"
+        "500":
+          description: "Internal server error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal Server Error"
+  /auth/logout:
+    get:
+      summary: "Log out the current user"
+      description: "Logs out the user by invalidating the JWT token through Redis."
+      tags:
+        - Authentication
+      responses:
+        "200":
+          description: "Logged out successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Logged out successfully"
+        "400":
+          description: "No token provided or invalid token"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "No token provided or invalid token"
+        "500":
+          description: "Internal server error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Internal Server Error"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []
